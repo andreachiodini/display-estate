@@ -40,7 +40,13 @@
     .time {
       font-size: 3em;
       font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .date {
+      font-size: 1.5em;
       margin-bottom: 20px;
+      color: #555;
     }
 
     .weather {
@@ -75,6 +81,7 @@
     <img src="img/logo.png" alt="Logo Piscina" class="logo">
     <div class="info">
       <div class="time" id="time">--:--:--</div>
+      <div class="date" id="date">--</div>
       <div class="weather" id="weather">Caricamento meteo...</div>
       <div class="hours">Apertura Vasca Esterna:<br>10:30 - 19:30</div>
       <div class="forecast" id="forecast">Caricamento previsioni...</div>
@@ -90,8 +97,17 @@
       document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
     }
 
+    function updateDate() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dateString = now.toLocaleDateString('it-IT', options);
+      document.getElementById('date').textContent = dateString.charAt(0).toUpperCase() + dateString.slice(1);
+    }
+
     setInterval(updateTime, 1000);
+    setInterval(updateDate, 60000);
     updateTime();
+    updateDate();
 
     async function fetchWeather() {
       const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be'; // Inserisci qui la tua API Key
