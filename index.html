@@ -23,7 +23,7 @@
       padding: 40px;
       border-radius: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      max-width: 600px;
+      max-width: 700px;
       width: 90%;
     }
 
@@ -52,6 +52,22 @@
       font-size: 1.8em;
       font-weight: 600;
     }
+
+    .forecast {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .forecast-day {
+      text-align: center;
+      font-size: 1em;
+    }
+
+    .forecast-day img {
+      width: 50px;
+      height: 50px;
+    }
   </style>
 </head>
 <body>
@@ -61,43 +77,100 @@
       <div class="time" id="time">--:--:--</div>
       <div class="weather" id="weather">Caricamento meteo...</div>
       <div class="hours">Apertura Vasca Esterna:<br>10:30 - 19:30</div>
+      <div class="forecast" id="forecast">Caricamento previsioni...</div>
     </div>
   </div>
 
- <script>
-  function updateTime() {
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const seconds = now.getSeconds().toString().padStart(2, '0');
-    document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
-  }
-
-  setInterval(updateTime, 1000);
-  updateTime();
-
-  async function fetchWeather() {
-    const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';
-    const city = 'Milano,it';
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=it`;
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      const temp = Math.round(data.main.temp);
-      const description = data.weather[0].description;
-      document.getElementById('weather').textContent = `☀️ ${temp}°C - ${description}`;
-    } catch (error) {
-      console.error('Errore nel caricamento meteo:', error);
-      document.getElementById('weather').textContent = 'Errore nel caricamento meteo';
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
     }
-  }
 
-  fetchWeather();
-  setInterval(fetchWeather, 600000); // Aggiorna ogni 10 minuti
-</script>
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    async function fetchWeather() {
+      const apiKey = 'LA_TUA_API_KEY'; // Inserisci qui la tua API Key
+      const city = 'Milano,it';
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=it`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const temp = Math.round(data.main.temp);
+        const description = data.weather[0].description;
+        document.getElementById('weather').textContent = `☀️ ${temp}°C - ${description}`;
+      } catch (error) {
+        console.error('Errore nel caricamento meteo:', error);
+        document.getElementById('weather').textContent = 'Errore nel caricamento meteo';
+      }
+    }
+
+    async function fetchForecast() {
+      const apiKey = 'LA_TUA_API_KEY'; // Inserisci qui la tua API Key
+      const city = 'Milano,it';
+      const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=it`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        const forecastEl = document.getElementById('forecast');
+        forecastEl.innerHTML = '';
+
+        const days = {};
+
+        data.list.forEach(item => {
+          const date = new Date(item.dt_txt);
+          const day = date.toLocaleDateString('it-IT', { weekday: 'long' });
+
+          if (!days[day]) {
+            days[day] = [];
+          }
+          days[day].push(item);
+        });
+
+        const dayNames = Object.keys(days).slice(0, 3);
+
+        dayNames.forEach(day => {
+          const dayData = days[day];
+          const temps = dayData.map(d => d.main.temp);
+          const minTemp = Math.min(...temps);
+          const maxTemp = Math.max(...temps);
+          const icon = dayData[0].weather[0].icon;
+
+          const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+
+          forecastEl.innerHTML += `
+            <div class="forecast-day">
+              <div>${day.charAt(0).toUpperCase() + day.slice(1)}</div>
+              <img src="${iconUrl}" alt="Icona Meteo">
+              <div>${Math.round(minTemp)}°C / ${Math.round(maxTemp)}°C</div>
+            </div>
+          `;
+        });
+
+      } catch (error) {
+        console.error('Errore nel caricamento previsioni:', error);
+        document.getElementById('forecast').textContent = 'Errore nel caricamento previsioni';
+      }
+    }
+
+    fetchWeather();
+    setInterval(fetchWeather, 600000); // aggiorna ogni 10 minuti
+
+    fetchForecast();
+    setInterval(fetchForecast, 3600000); // aggiorna ogni ora
+  </script>
 </body>
 </html>
