@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Info Piscina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 90%;
+    }
+
+    .logo {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+
+    .info {
+      font-size: 2em;
+      color: #333;
+    }
+
+    .time {
+      font-size: 3em;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .weather {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+
+    .hours {
+      font-size: 1.8em;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="img/logo.png" alt="Logo Piscina" class="logo">
+    <div class="info">
+      <div class="time" id="time">--:--:--</div>
+      <div class="weather" id="weather">Caricamento meteo...</div>
+      <div class="hours">Apertura Vasca Esterna:<br>10:30 - 19:30</div>
+    </div>
+  </div>
+
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // METEO (usa OpenWeatherMap API)
+    async function fetchWeather() {
+      const apiKey = 'INSERISCI_LA_TUA_API_KEY';
+      const city = 'Milano'; // Cambia con la tua città se vuoi
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=it`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const temp = Math.round(data.main.temp);
+        const description = data.weather[0].description;
+        document.getElementById('weather').textContent = `☀️ ${temp}°C - ${description}`;
+      } catch (error) {
+        document.getElementById('weather').textContent = 'Errore nel caricamento meteo';
+      }
+    }
+
+    fetchWeather();
+    setInterval(fetchWeather, 600000); // Aggiorna ogni 10 minuti
+  </script>
+</body>
+</html>
