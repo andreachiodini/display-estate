@@ -64,37 +64,40 @@
     </div>
   </div>
 
-  <script>
-    function updateTime() {
-      const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const seconds = now.getSeconds().toString().padStart(2, '0');
-      document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
-    }
+ <script>
+  function updateTime() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+  }
 
-    setInterval(updateTime, 1000);
-    updateTime();
+  setInterval(updateTime, 1000);
+  updateTime();
 
-    // METEO (usa OpenWeatherMap API)
-    async function fetchWeather() {
-      const apiKey = 'a1e25c553bab8b5e036f0848ec65350c';
-      const city = 'Milano,it'; // Cambia con la tua città se vuoi
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=it`;
+  async function fetchWeather() {
+    const apiKey = 'a1e25c553bab8b5e036f0848ec65350c';
+    const city = 'Milano,it';
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=it`;
 
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const temp = Math.round(data.main.temp);
-        const description = data.weather[0].description;
-        document.getElementById('weather').textContent = `☀️ ${temp}°C - ${description}`;
-      } catch (error) {
-        document.getElementById('weather').textContent = 'Errore nel caricamento meteo';
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      const data = await response.json();
+      const temp = Math.round(data.main.temp);
+      const description = data.weather[0].description;
+      document.getElementById('weather').textContent = `☀️ ${temp}°C - ${description}`;
+    } catch (error) {
+      console.error('Errore nel caricamento meteo:', error);
+      document.getElementById('weather').textContent = 'Errore nel caricamento meteo';
     }
+  }
 
-    fetchWeather();
-    setInterval(fetchWeather, 600000); // Aggiorna ogni 10 minuti
-  </script>
+  fetchWeather();
+  setInterval(fetchWeather, 600000); // Aggiorna ogni 10 minuti
+</script>
 </body>
 </html>
