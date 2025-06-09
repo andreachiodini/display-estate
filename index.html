@@ -71,8 +71,8 @@
     }
 
     .forecast-day img {
-      width: 50px;
-      height: 50px;
+      width: 100px;
+      height: 100px;
     }
   </style>
 </head>
@@ -109,61 +109,28 @@
     updateTime();
     updateDate();
 
-    async function fetchForecast() {
-  const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be'; // la tua API Key
-  const city = 'Milano,it';
-  const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=it`;
+    async function fetchWeather() {
+      const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be'; // la tua API Key
+      const city = 'Milano,it';
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=it`;
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-
-    const forecastEl = document.getElementById('forecast');
-    forecastEl.innerHTML = '';
-
-    const days = {};
-
-    data.list.forEach(item => {
-      const date = new Date(item.dt_txt);
-      const day = date.toLocaleDateString('it-IT', { weekday: 'long' });
-
-      if (!days[day]) {
-        days[day] = [];
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const temp = Math.round(data.main.temp);
+        const description = data.weather[0].description;
+        document.getElementById('weather').textContent = `☀️ ${temp}°C - ${description}`;
+      } catch (error) {
+        console.error('Errore nel caricamento meteo:', error);
+        document.getElementById('weather').textContent = 'Errore nel caricamento meteo';
       }
-      days[day].push(item);
-    });
-
-    const dayNames = Object.keys(days).slice(0, 3);
-
-    dayNames.forEach(day => {
-      const dayData = days[day];
-      const temps = dayData.map(d => d.main.temp);
-      const minTemp = Math.min(...temps);
-      const maxTemp = Math.max(...temps);
-      const icon = dayData[0].weather[0].icon;
-
-      const iconUrl = `https://basmilius.github.io/weather-icons/production/fill/all/${icon}.svg`;
-
-      forecastEl.innerHTML += `
-        <div class="forecast-day">
-          <div>${day.charAt(0).toUpperCase() + day.slice(1)}</div>
-          <img src="${iconUrl}" alt="Icona Meteo">
-          <div>${Math.round(minTemp)}°C / ${Math.round(maxTemp)}°C</div>
-        </div>
-      `;
-    });
-
-  } catch (error) {
-    console.error('Errore nel caricamento previsioni:', error);
-    document.getElementById('forecast').textContent = 'Errore nel caricamento previsioni';
-  }
-}
+    }
 
     async function fetchForecast() {
-      const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be'; // Inserisci qui la tua API Key
+      const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be'; // la tua API Key
       const city = 'Milano,it';
       const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=it`;
 
@@ -198,7 +165,7 @@
           const maxTemp = Math.max(...temps);
           const icon = dayData[0].weather[0].icon;
 
-          const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+          const iconUrl = `https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/2nd%20Set/${icon}.png`;
 
           forecastEl.innerHTML += `
             <div class="forecast-day">
