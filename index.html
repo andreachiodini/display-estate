@@ -133,52 +133,52 @@
         updateDateTime();
 
         // METEO ATTUALE
-        fetch(weatherUrl)
-            .then(response => response.json())
-            .then(data => {
-                const weatherDiv = document.getElementById('current-weather');
-                const icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-                weatherDiv.innerHTML = `
-                    <h2>Meteo attuale</h2>
-                    <img src="${icon}" class="weather-icon" alt="${data.weather[0].description}">
-                    <p>${data.weather[0].description}</p>
-                    <p>🌡️ ${data.main.temp}°C</p>
-                `;
-            });
+fetch(weatherUrl)
+    .then(response => response.json())
+    .then(data => {
+        const weatherDiv = document.getElementById('current-weather');
+        const icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+        weatherDiv.innerHTML = `
+            <h2>Meteo attuale</h2>
+            <img src="${icon}" class="weather-icon" alt="${data.weather[0].description}">
+            <p>${data.weather[0].description}</p>
+            <p>🌡️ ${data.main.temp.toFixed(1)}°C</p>
+        `;
+    });
 
-        // PREVISIONI 3 GIORNI
-        fetch(forecastUrl)
-            .then(response => response.json())
-            .then(data => {
-                const cards = document.getElementById('forecast-cards');
-                cards.innerHTML = ''; // svuota prima
-                const days = {};
-                data.list.forEach(item => {
-                    const date = item.dt_txt.split(' ')[0];
-                    if (!days[date]) days[date] = item;
-                });
+// PREVISIONI 3 GIORNI
+fetch(forecastUrl)
+    .then(response => response.json())
+    .then(data => {
+        const cards = document.getElementById('forecast-cards');
+        cards.innerHTML = ''; // svuota prima
+        const days = {};
+        data.list.forEach(item => {
+            const date = item.dt_txt.split(' ')[0];
+            if (!days[date]) days[date] = item;
+        });
 
-                let count = 0;
-                for (let date in days) {
-                    if (count >= 3) break;
-                    const d = days[date];
-                    const icon = `https://openweathermap.org/img/wn/${d.weather[0].icon}@2x.png`;
-                    const temp = d.main.temp.toFixed(1);
-                    const desc = d.weather[0].description;
-                    const dayName = new Date(date).toLocaleDateString('it-IT', { weekday: 'long' });
+        let count = 0;
+        for (let date in days) {
+            if (count >= 3) break;
+            const d = days[date];
+            const icon = `https://openweathermap.org/img/wn/${d.weather[0].icon}@2x.png`;
+            const temp = d.main.temp.toFixed(1);
+            const desc = d.weather[0].description;
+            const dayName = new Date(date).toLocaleDateString('it-IT', { weekday: 'long' });
 
-                    const card = document.createElement('div');
-                    card.className = 'forecast-card';
-                    card.innerHTML = `
-                        <strong>${dayName.charAt(0).toUpperCase() + dayName.slice(1)}</strong><br>
-                        <img src="${icon}" class="weather-icon" alt="${desc}">
-                        <div>${desc}</div>
-                        <div>🌡️ ${temp}°C</div>
-                    `;
-                    cards.appendChild(card);
-                    count++;
-                }
-            });
+            const card = document.createElement('div');
+            card.className = 'forecast-card';
+            card.innerHTML = `
+                <strong>${dayName.charAt(0).toUpperCase() + dayName.slice(1)}</strong><br>
+                <img src="${icon}" class="weather-icon" alt="${desc}">
+                <div>${desc}</div>
+                <div>🌡️ ${temp}°C</div>
+            `;
+            cards.appendChild(card);
+            count++;
+        }
+    });
     </script>
 </body>
 </html>
