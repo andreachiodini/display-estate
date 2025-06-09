@@ -3,8 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Informazioni Piscina</title>
+    <!-- Font Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        #datetime {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .opening-hours {
+            margin: 20px 0;
+        }
+
+        #current-weather, #forecast {
+            margin: 20px 0;
+        }
+
+        h2 {
+            font-weight: 600;
+        }
+
+        p {
+            font-weight: 400;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -18,101 +58,64 @@
         <div id="forecast"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // METEO: API CONFIG
+        const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';  // <-- METTI QUI LA TUA API KEY
+        const city = 'Milano'; // <-- o la tua città
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=it&appid=${apiKey}`;
+        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=it&appid=${apiKey}`;
+
+        // AGGIORNA DATA E ORA
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const date = now.toLocaleDateString('it-IT', options);
+            const time = now.toLocaleTimeString('it-IT');
+            document.getElementById('datetime').innerHTML = `<strong>Data:</strong> ${date} <br> <strong>Ora:</strong> ${time}`;
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // METEO ATTUALE
+        fetch(weatherUrl)
+            .then(response => response.json())
+            .then(data => {
+                const weatherDiv = document.getElementById('current-weather');
+                weatherDiv.innerHTML = `
+                    <h2>Meteo attuale</h2>
+                    <p>${data.weather[0].description}</p>
+                    <p>🌡️ ${data.main.temp}°C</p>
+                `;
+            });
+
+        // PREVISIONI 3 GIORNI
+        fetch(forecastUrl)
+            .then(response => response.json())
+            .then(data => {
+                const forecastDiv = document.getElementById('forecast');
+                forecastDiv.innerHTML = '<h2>Previsioni prossimi 3 giorni</h2>';
+
+                const days = {};
+                data.list.forEach(item => {
+                    const date = item.dt_txt.split(' ')[0];
+                    if (!days[date]) {
+                        days[date] = item;
+                    }
+                });
+
+                let count = 0;
+                for (let date in days) {
+                    if (count >= 3) break;
+                    const day = days[date];
+                    const temp = day.main.temp;
+                    const description = day.weather[0].description;
+
+                    forecastDiv.innerHTML += `
+                        <p><strong>${date}</strong>: ${description}, ${temp}°C</p>
+                    `;
+                    count++;
+                }
+            });
+    </script>
 </body>
 </html>
-body {
-    font-family: 'Poppins', sans-serif;
-    text-align: center;
-    background: #f0f8ff;
-    margin: 0;
-    padding: 20px;
-}
-
-.container {
-    max-width: 800px;
-    margin: auto;
-}
-
-.logo {
-    width: 150px;
-    margin-bottom: 20px;
-}
-
-#datetime {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-}
-
-.opening-hours {
-    margin: 20px 0;
-}
-
-#current-weather, #forecast {
-    margin: 20px 0;
-}
-
-h2 {
-    font-weight: 600;
-}
-
-p {
-    font-weight: 400;
-}
-// METEO: API CONFIG
-const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';  // <-- sostituisci con la tua chiave API
-const city = 'Milano'; // o la tua città
-const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=it&appid=${apiKey}`;
-const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=it&cnt=24&appid=${apiKey}`;
-
-// AGGIORNA DATA E ORA
-function updateDateTime() {
-    const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const date = now.toLocaleDateString('it-IT', options);
-    const time = now.toLocaleTimeString('it-IT');
-    document.getElementById('datetime').innerHTML = `<strong>Data:</strong> ${date} <br> <strong>Ora:</strong> ${time}`;
-}
-setInterval(updateDateTime, 1000);
-updateDateTime();
-
-// METEO ATTUALE
-fetch(weatherUrl)
-    .then(response => response.json())
-    .then(data => {
-        const weatherDiv = document.getElementById('current-weather');
-        weatherDiv.innerHTML = `
-            <h2>Meteo attuale</h2>
-            <p>${data.weather[0].description}</p>
-            <p>🌡️ ${data.main.temp}°C</p>
-        `;
-    });
-
-// PREVISIONI 3 GIORNI (ogni 8 ore ≈ 3 previsioni/giorno)
-fetch(forecastUrl)
-    .then(response => response.json())
-    .then(data => {
-        const forecastDiv = document.getElementById('forecast');
-        forecastDiv.innerHTML = '<h2>Previsioni prossimi 3 giorni</h2>';
-
-        const days = {};
-        data.list.forEach(item => {
-            const date = item.dt_txt.split(' ')[0];
-            if (!days[date]) {
-                days[date] = item;
-            }
-        });
-
-        let count = 0;
-        for (let date in days) {
-            if (count >= 3) break;
-            const day = days[date];
-            const temp = day.main.temp;
-            const description = day.weather[0].description;
-
-            forecastDiv.innerHTML += `
-                <p><strong>${date}</strong>: ${description}, ${temp}°C</p>
-            `;
-            count++;
-        }
-    });
