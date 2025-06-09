@@ -8,41 +8,58 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            text-align: center;
-            background: #f0f8ff;
+            background: linear-gradient(to right, #c6efff, #ffffff);
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 800px;
-            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
         }
 
         .logo {
-            width: 150px;
+            width: 120px;
             margin-bottom: 20px;
         }
 
         #datetime {
-            font-size: 1.5em;
+            font-size: 1.2em;
             margin-bottom: 20px;
         }
 
         .opening-hours {
-            margin: 20px 0;
+            margin: 30px 0;
         }
 
         #current-weather, #forecast {
-            margin: 20px 0;
+            margin: 30px 0;
         }
 
         h2 {
             font-weight: 600;
+            margin-bottom: 10px;
+            color: #0077b6;
         }
 
         p {
             font-weight: 400;
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+
+        .weather-icon {
+            width: 60px;
+            height: 60px;
         }
     </style>
 </head>
@@ -60,8 +77,8 @@
 
     <script>
         // METEO: API CONFIG
-        const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';  // <-- METTI QUI LA TUA API KEY
-        const city = 'Milano'; // <-- o la tua città
+        const apiKey = 'TUO_API_KEY';  // <-- METTI QUI LA TUA API KEY
+        const city = 'Milano';
         const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=it&appid=${apiKey}`;
         const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=it&appid=${apiKey}`;
 
@@ -81,8 +98,10 @@
             .then(response => response.json())
             .then(data => {
                 const weatherDiv = document.getElementById('current-weather');
+                const icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
                 weatherDiv.innerHTML = `
                     <h2>Meteo attuale</h2>
+                    <img src="${icon}" class="weather-icon" alt="${data.weather[0].description}">
                     <p>${data.weather[0].description}</p>
                     <p>🌡️ ${data.main.temp}°C</p>
                 `;
@@ -109,9 +128,12 @@
                     const day = days[date];
                     const temp = day.main.temp;
                     const description = day.weather[0].description;
+                    const icon = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
 
                     forecastDiv.innerHTML += `
-                        <p><strong>${date}</strong>: ${description}, ${temp}°C</p>
+                        <p><strong>${date}</strong><br>
+                        <img src="${icon}" class="weather-icon" alt="${description}"><br>
+                        ${description}, ${temp}°C</p>
                     `;
                     count++;
                 }
