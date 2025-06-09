@@ -22,7 +22,7 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            max-width: 900px; /* <-- Aumentato */
+            max-width: 900px;
             width: 100%;
             text-align: center;
         }
@@ -107,7 +107,7 @@
 
     <script>
         // METEO: API CONFIG
-        const apiKey = 'TUO_API_KEY';  // <-- METTI QUI LA TUA API KEY
+        const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';  // <-- METTI QUI LA TUA API KEY
         const city = 'Milano';
         const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=it&appid=${apiKey}`;
         const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=it&appid=${apiKey}`;
@@ -118,7 +118,7 @@
             const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const date = now.toLocaleDateString('it-IT', optionsDate);
             const time = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); // Senza secondi
-            document.getElementById('datetime').innerHTML = `<strong>Data:</strong> ${date} <br> <strong>Ora:</strong> ${time}`;
+            document.getElementById('datetime').innerHTML = `${date} <br> ${time}`;
         }
         setInterval(updateDateTime, 1000);
         updateDateTime();
