@@ -64,4 +64,139 @@
 
         p {
             font-weight: 400;
-            font-size: 1
+            font-size: 1.5em; /* testi più grandi */
+            margin: 10px 0;
+        }
+
+        .weather-icon {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Forecast cards in row */
+        #forecast-cards {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .forecast-card {
+            background: #e0f7ff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .forecast-card strong {
+            font-size: 1.5em;
+        }
+
+        .forecast-card img.weather-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 10px;
+        }
+
+        .forecast-card div {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logo.png" alt="Logo Piscina" class="logo">
+        <div id="datetime"></div>
+        <div id="current-weather"></div>
+        <div class="opening-hours">
+            <h2>Orario apertura vasca esterna</h2>
+            <p>10:30 - 19:30</p>
+        </div>
+        <div id="forecast">
+            <h2>Previsioni prossimi 3 giorni</h2>
+            <div id="forecast-cards"></div>
+        </div>
+    </div>
+
+    <script>
+        // METEO: API CONFIG
+        const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';  // <-- La tua API KEY
+        const city = 'Milano,it';
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=it&appid=${apiKey}`;
+        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=it&appid=${apiKey}`;
+
+        // AGGIORNA DATA E ORA
+        function updateDateTime() {
+            const now = new Date();
+            const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const date = now.toLocaleDateString('it-IT', optionsDate);
+            const time = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('datetime').innerHTML = `${date} <br> ${time}`;
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // METEO ATTUALE
+        fetch(weatherUrl)
+            .then(response => response.json())
+            .then(data => {
+                const weatherDiv = document.getElementById('current-weather');
+                const icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+                weatherDiv.innerHTML = `
+                    <h2>Meteo attuale</h2>
+                    <img src="${icon}" class="weather-icon" alt="${data.weather[0].description}">
+                    <p>${data.weather[0].description}</p>
+                    <p>🌡️ ${data.main.temp.toFixed(1)}°C</p>
+                `;
+            });
+
+        // PREVISIONI 3 GIORNI
+        fetch(forecastUrl)
+            .then(response => response.json())
+            .then(data => {
+                const cards = document.getElementById('forecast-cards');
+                cards.innerHTML = ''; // svuota prima
+                const days = {};
+
+                // Raggruppa tutte le previsioni per giorno
+                data.list.forEach(item => {
+                    const date = item.dt_txt.split(' ')[0];
+                    if (!days[date]) days[date] = [];
+                    days[date].push(item);
+                });
+
+                let count = 0;
+                for (let date in days) {
+                    if (count >= 3) break;
+                    const dayData = days[date];
+
+                    // Calcolo min e max temperatura
+                    const temps = dayData.map(d => d.main.temp);
+                    const tempMin = Math.min(...temps).toFixed(1);
+                    const tempMax = Math.max(...temps).toFixed(1);
+
+                    // Icona e descrizione dal primo item
+                    const firstItem = dayData[0];
+                    const icon = `https://openweathermap.org/img/wn/${firstItem.weather[0].icon}@2x.png`;
+                    const desc = firstItem.weather[0].description;
+                    const dayName = new Date(date).toLocaleDateString('it-IT', { weekday: 'long' });
+
+                    const card = document.createElement('div');
+                    card.className = 'forecast-card';
+                    card.innerHTML = `
+                        <strong>${dayName.charAt(0).toUpperCase() + dayName.slice(1)}</strong><br>
+                        <img src="${icon}" class="weather-icon" alt="${desc}">
+                        <div>${desc}</div>
+                        <div>🌡️ ${tempMin}°C — ${tempMax}°C</div>
+                    `;
+                    cards.appendChild(card);
+                    count++;
+                }
+            });
+    </script>
+</body>
+</html>
