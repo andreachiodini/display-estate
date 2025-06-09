@@ -156,18 +156,28 @@ fetch(forecastUrl)
         const cards = document.getElementById('forecast-cards');
         cards.innerHTML = ''; // svuota prima
         const days = {};
+
+        // Raggruppa tutte le previsioni per giorno
         data.list.forEach(item => {
             const date = item.dt_txt.split(' ')[0];
-            if (!days[date]) days[date] = item;
+            if (!days[date]) days[date] = [];
+            days[date].push(item);
         });
 
         let count = 0;
         for (let date in days) {
             if (count >= 3) break;
-            const d = days[date];
-            const icon = `https://openweathermap.org/img/wn/${d.weather[0].icon}@2x.png`;
-            const temp = d.main.temp.toFixed(1);
-            const desc = d.weather[0].description;
+            const dayData = days[date];
+
+            // Calcolo min e max temperatura
+            const temps = dayData.map(d => d.main.temp);
+            const tempMin = Math.min(...temps).toFixed(1);
+            const tempMax = Math.max(...temps).toFixed(1);
+
+            // Icona e descrizione dal primo item
+            const firstItem = dayData[0];
+            const icon = `https://openweathermap.org/img/wn/${firstItem.weather[0].icon}@2x.png`;
+            const desc = firstItem.weather[0].description;
             const dayName = new Date(date).toLocaleDateString('it-IT', { weekday: 'long' });
 
             const card = document.createElement('div');
@@ -176,7 +186,7 @@ fetch(forecastUrl)
                 <strong>${dayName.charAt(0).toUpperCase() + dayName.slice(1)}</strong><br>
                 <img src="${icon}" class="weather-icon" alt="${desc}">
                 <div>${desc}</div>
-                <div>🌡️ ${temp}°C</div>
+                <div>🌡️ ${tempMin}°C — ${tempMax}°C</div>
             `;
             cards.appendChild(card);
             count++;
