@@ -22,7 +22,7 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
             text-align: center;
         }
@@ -61,6 +61,31 @@
             width: 60px;
             height: 60px;
         }
+
+        /* Forecast cards in row */
+        #forecast-cards {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .forecast-card {
+            background: #e0f7ff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .forecast-card img.weather-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -72,12 +97,15 @@
             <h2>Orario apertura vasca esterna</h2>
             <p>10:30 - 19:30</p>
         </div>
-        <div id="forecast"></div>
+        <div id="forecast">
+            <h2>Previsioni prossimi 3 giorni</h2>
+            <div id="forecast-cards"></div>
+        </div>
     </div>
 
     <script>
         // METEO: API CONFIG
-        const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';  // <-- METTI QUI LA TUA API KEY
+        const apiKey = 'TUO_API_KEY';  // <-- METTI QUI LA TUA API KEY
         const city = 'Milano';
         const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=it&appid=${apiKey}`;
         const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=it&appid=${apiKey}`;
@@ -111,30 +139,31 @@
         fetch(forecastUrl)
             .then(response => response.json())
             .then(data => {
-                const forecastDiv = document.getElementById('forecast');
-                forecastDiv.innerHTML = '<h2>Previsioni prossimi 3 giorni</h2>';
-
+                const cards = document.getElementById('forecast-cards');
+                cards.innerHTML = ''; // svuota prima
                 const days = {};
                 data.list.forEach(item => {
                     const date = item.dt_txt.split(' ')[0];
-                    if (!days[date]) {
-                        days[date] = item;
-                    }
+                    if (!days[date]) days[date] = item;
                 });
 
                 let count = 0;
                 for (let date in days) {
                     if (count >= 3) break;
-                    const day = days[date];
-                    const temp = day.main.temp;
-                    const description = day.weather[0].description;
-                    const icon = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+                    const d = days[date];
+                    const icon = `https://openweathermap.org/img/wn/${d.weather[0].icon}@2x.png`;
+                    const temp = d.main.temp.toFixed(1);
+                    const desc = d.weather[0].description;
 
-                    forecastDiv.innerHTML += `
-                        <p><strong>${date}</strong><br>
-                        <img src="${icon}" class="weather-icon" alt="${description}"><br>
-                        ${description}, ${temp}°C</p>
+                    const card = document.createElement('div');
+                    card.className = 'forecast-card';
+                    card.innerHTML = `
+                        <strong>${date}</strong><br>
+                        <img src="${icon}" class="weather-icon" alt="${desc}">
+                        <div>${desc}</div>
+                        <div>🌡️ ${temp}°C</div>
                     `;
+                    cards.appendChild(card);
                     count++;
                 }
             });
