@@ -6,107 +6,118 @@
     <!-- Font Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
+        html, body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #c6efff, #ffffff);
             margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            padding: 0;
+            height: 100%;
         }
 
         .container {
             background: #ffffff;
-            padding: 50px;
+            padding: 20px;
             border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            width: 95%;
             max-width: 1200px;
-            width: 100%;
+            margin: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
             text-align: center;
         }
 
         .logo {
-            width: 180px;
-            margin-bottom: 40px;
+            width: 120px;
+            margin-bottom: 10px;
         }
 
         #datetime {
-            font-size: 3em; /* molto più grande */
+            font-size: 2.5em;
             font-weight: 700;
             color: #0077b6;
-            margin-bottom: 20px;
-        }
-
-        .opening-hours {
-            margin: 50px 0;
+            margin-bottom: 10px;
         }
 
         .opening-hours h2 {
-            margin-bottom: 10px;
-            font-size: 3em; /* enorme */
+            margin: 0;
+            font-size: 2.5em;
         }
 
         .opening-hours p {
-            margin-top: 0;
-            font-size: 2.5em; /* grande */
+            margin: 5px 0 0 0;
+            font-size: 2em;
             font-weight: 500;
         }
 
         #current-weather, #forecast {
-            margin: 50px 0;
+            margin: 20px 0;
         }
 
         h2 {
             font-weight: 700;
-            font-size: 3em; /* titoli molto grandi */
-            margin: 20px 0;
+            font-size: 2.5em;
+            margin: 10px 0;
             color: #0077b6;
         }
 
         p {
             font-weight: 400;
-            font-size: 2.2em; /* testi più grandi */
-            margin: 15px 0;
+            font-size: 2em;
+            margin: 5px 0;
         }
 
         .weather-icon {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
         }
 
-        /* Forecast cards in row */
         #forecast-cards {
             display: flex;
-            justify-content: space-between;
-            gap: 30px;
-            margin-top: 40px;
+            justify-content: center;
+            gap: 15px;
             flex-wrap: wrap;
+            margin-top: 15px;
         }
 
         .forecast-card {
             background: #e0f7ff;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 200px;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            flex: 1 1 30%;
             text-align: center;
+            min-width: 150px;
+            max-width: 200px;
         }
 
         .forecast-card strong {
-            font-size: 2.2em;
+            font-size: 1.8em;
         }
 
         .forecast-card img.weather-icon {
-            width: 90px;
-            height: 90px;
-            margin-bottom: 15px;
+            width: 70px;
+            height: 70px;
+            margin-bottom: 5px;
         }
 
         .forecast-card div {
-            font-size: 1.8em;
+            font-size: 1.4em;
+        }
+
+        @media (max-height: 700px) {
+            #datetime, h2, .opening-hours h2 {
+                font-size: 2em;
+            }
+            .opening-hours p, p, .forecast-card div {
+                font-size: 1.5em;
+            }
+            .forecast-card strong {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
