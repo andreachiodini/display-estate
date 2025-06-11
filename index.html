@@ -22,7 +22,7 @@
             width: 95%;
             max-width: 1000px;
             margin: auto;
-            height: 90vh; /* ridotto rispetto a 100vh */
+            height: 90vh;
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
@@ -31,48 +31,48 @@
         }
 
         .logo {
-            width: 200px; /* PIÙ GRANDE */
+            width: 220px;
             margin-bottom: 10px;
         }
 
         #datetime {
-            font-size: 3em; /* PIÙ GRANDE */
+            font-size: 4em;
             font-weight: 700;
             color: #0077b6;
-            margin-bottom: 5px; /* PIÙ COMPATTO */
+            margin-bottom: 5px;
         }
 
         .opening-hours h2 {
             margin: 0;
-            font-size: 3em; /* PIÙ GRANDE */
+            font-size: 4em;
         }
 
         .opening-hours p {
             margin-top: 5px;
-            font-size: 2.5em; /* PIÙ GRANDE */
+            font-size: 3em;
             font-weight: 600;
         }
 
         #current-weather {
-            margin: 10px 0; /* PIÙ COMPATTO */
+            margin: 10px 0;
         }
 
         h2 {
             font-weight: 700;
-            font-size: 3em;
+            font-size: 4em;
             margin: 10px 0;
             color: #0077b6;
         }
 
         p {
             font-weight: 400;
-            font-size: 2.5em;
+            font-size: 3em;
             margin: 5px 0;
         }
 
         .weather-icon {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
         }
     </style>
 </head>
@@ -88,12 +88,10 @@
     </div>
 
     <script>
-        // METEO: API CONFIG
-        const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';  // <-- API KEY
+        const apiKey = 'c8ae27a92da87f8d3a710568ed63a3be';
         const city = 'Milano,it';
         const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=it&appid=${apiKey}`;
 
-        // AGGIORNA DATA E ORA
         function updateDateTime() {
             const now = new Date();
             const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -101,10 +99,10 @@
             const time = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('datetime').innerHTML = `${date} <br> ${time}`;
         }
+
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        // METEO ATTUALE
         fetch(weatherUrl)
             .then(response => response.json())
             .then(data => {
